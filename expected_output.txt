@@ -1,0 +1,42 @@
+REAL output of: python planner.py demo   (Python 3.13, Ubuntu 24.04). Times in Step 7 depend on the computer.
+---------------------------------------------------------------------
+=== STEP 1: Network: 15 airports, 34 routes ===
+Airports: DEL (Delhi), BOM (Mumbai), BLR (Bengaluru), MAA (Chennai), CCU (Kolkata), HYD (Hyderabad), AMD (Ahmedabad), PNQ (Pune), JAI (Jaipur), LKO (Lucknow), KNU (Kanpur), PAT (Patna), GAU (Guwahati), COK (Kochi), GOI (Goa)
+
+=== STEP 2: Best route Bengaluru (BLR) -> Lucknow (LKO) for different goals (Dijkstra) ===
+distance : BLR -> BOM -> KNU -> LKO   | 2019 km, 4.02 h, fuel 5248 kg, 3 flight(s)
+time     : BLR -> DEL -> LKO   | 2132 km, 3.67 h, fuel 5543 kg, 2 flight(s)
+fuel     : BLR -> BOM -> KNU -> LKO   | 2019 km, 4.02 h, fuel 5248 kg, 3 flight(s)
+balanced : BLR -> DEL -> LKO   | 2132 km, 3.67 h, fuel 5543 kg, 2 flight(s)
+Map saved: output/route_blr_lko.png
+
+=== STEP 3: Multi-objective: change the weight between time and fuel (BLR -> LKO) ===
+time weight 1.00: BLR -> DEL -> LKO   | 2132 km, 3.67 h, fuel 5543 kg, 2 flight(s)
+time weight 0.75: BLR -> DEL -> LKO   | 2132 km, 3.67 h, fuel 5543 kg, 2 flight(s)
+time weight 0.50: BLR -> DEL -> LKO   | 2132 km, 3.67 h, fuel 5543 kg, 2 flight(s)
+time weight 0.25: BLR -> BOM -> KNU -> LKO   | 2019 km, 4.02 h, fuel 5248 kg, 3 flight(s)
+time weight 0.00: BLR -> BOM -> KNU -> LKO   | 2019 km, 4.02 h, fuel 5248 kg, 3 flight(s)
+
+=== STEP 4: Weather: a storm (factor 2.0) on DEL-BLR slows the flight and burns more fuel ===
+clear sky : DEL -> BLR   | 1709 km, 2.64 h, fuel 4443 kg, 1 flight(s)
+storm     : DEL -> HYD -> BLR   | 1722 km, 3.15 h, fuel 4476 kg, 2 flight(s)
+
+=== STEP 5: Airspace restriction: HYD and BOM are closed ===
+normal    : DEL -> HYD -> MAA   | 1773 km, 3.22 h, fuel 4611 kg, 2 flight(s)
+closed    : DEL -> BLR -> MAA   | 1977 km, 3.47 h, fuel 5139 kg, 2 flight(s)
+Map saved: output/route_closed_airports.png
+Destination closed: no route available
+
+=== STEP 6: Correctness check - heap Dijkstra vs array Dijkstra on the real network ===
+All source/destination pairs and all 4 goals give identical distances: YES
+
+=== STEP 7: Performance analysis (random networks, best of 3 runs) ===
+Airports(V) | Routes(E) |   Heap ms |  Array ms | Array/Heap | same answer
+------------------------------------------------------------------------------
+        100 |       196 |      0.13 |      0.64 |       5.0x | yes
+        200 |       399 |      0.27 |      2.22 |       8.1x | yes
+        400 |       798 |      0.71 |      8.87 |      12.6x | yes
+        800 |      1598 |      1.92 |     41.44 |      21.6x | yes
+       1600 |      3197 |      3.65 |    152.32 |      41.8x | yes
+Graph saved: output/scalability.png
+(Times depend on your computer; the growth pattern is what matters.)
